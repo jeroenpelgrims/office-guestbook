@@ -1,0 +1,23 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Guestbook {
+  id       String  @id @default(uuid()) @db.Uuid
+  code     String  @unique
+  password String
+  Entry    Entry[]
+}
+
+model Entry {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  timestamp   DateTime
+  guestbookId String    @db.Uuid
+  guestbook   Guestbook @relation(fields: [guestbookId], references: [id])
+}
