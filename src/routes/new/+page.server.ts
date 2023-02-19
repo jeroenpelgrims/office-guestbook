@@ -8,7 +8,7 @@ export const actions = {
 		const code = humanId({ separator: ' ' }).toLowerCase();
 		const prisma = new PrismaClient();
 
-		await prisma.guestbook.create({ data: { code } });
+		await prisma.guestbook.create({ data: { code, generated: new Date() } });
 		await prisma.$disconnect();
 
 		throw redirect(303, `/${code.replaceAll(' ', '-')}`);

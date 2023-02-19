@@ -59,15 +59,15 @@
 							<div class="help">
 								Your password should contain:
 								<ul>
-									<li>at least 8 characters</li>
+									<li>at least 6 characters</li>
 									<li>at least 1 capital letter</li>
-									<li>at least 1 number</li>
-									<li>at least 1 special character (!@#$ etc...)</li>
+									<li>preferably some numbers</li>
+									<li>preferably some special characters (!@#$ etc...)</li>
 								</ul>
 							</div>
 						</div>
 
-						<button class="button is-primary" disabled={passwordValid.id < 2}
+						<button class="button is-primary" disabled={passwordValid.id < 1}
 							>Claim guestbook</button
 						>
 					</form>

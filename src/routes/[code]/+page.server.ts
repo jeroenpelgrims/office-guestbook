@@ -23,7 +23,7 @@ export const actions = {
 		const data = await request.formData();
 		const password = data.get('password') as string;
 
-		if (passwordStrength(password).id < 2) {
+		if (passwordStrength(password).id < 1) {
 			return fail(400, { passwordInvalid: true });
 		}
 
@@ -35,7 +35,7 @@ export const actions = {
 				password: null,
 				code
 			},
-			data: { password: hashedPassword }
+			data: { password: hashedPassword, claimed: new Date() }
 		});
 		await prisma.$disconnect();
 	},
