@@ -70,13 +70,6 @@
 						<button class="button is-primary" disabled={passwordValid.id < 2}
 							>Claim guestbook</button
 						>
-
-						<!-- {#if error}
-						<div class="notification is-danger is-light">
-							<button class="delete" on:click={() => (error = undefined)} />
-							An unknown error occurred
-						</div>
-					{/if} -->
 					</form>
 				</div>
 			</div>

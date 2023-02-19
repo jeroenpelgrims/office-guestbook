@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import humanId from 'human-id';
-	let code = '';
+	import { enhance } from '$app/forms';
+	import { toUrl } from '$lib/code';
 
-	function generateNewCode() {
-		code = humanId({ separator: ' ' }).toLowerCase();
-	}
+	let code = '';
 </script>
 
 <svelte:head>
@@ -18,35 +16,39 @@
 	<h2 class="subtitle is-4 has-text-centered">Keep track of your desk's visitors</h2>
 </div>
 
-<form action={`/${code.replaceAll(' ', '-')}`}>
+<div class="section">
 	<div class="columns">
 		<div class="column">
 			<div class="columns">
 				<div class="column">
-					<button
-						type="button"
-						class="button is-medium"
-						class:is-primary={!code}
-						on:click={generateNewCode}
-					>
-						New guestbook
-					</button>
+					<form method="POST" action="/new" use:enhance>
+						<button type="submit" class="button is-medium" class:is-primary={!code}>
+							New guestbook
+						</button>
+					</form>
 				</div>
 			</div>
 		</div>
 
 		<div class="column is-full">
 			<div class="columns is-mobile">
-				<div class="column is-two-thirds">
-					<input class="input is-medium" type="text" placeholder="Enter a code" bind:value={code} />
-				</div>
-				<div class="column">
-					{#if code}<button class="button is-medium is-primary">Open</button>{/if}
-				</div>
+				<form method="GET" action={`/${toUrl(code)}`}>
+					<div class="column is-two-thirds">
+						<input
+							class="input is-medium"
+							type="text"
+							placeholder="Enter a code"
+							bind:value={code}
+						/>
+					</div>
+					<div class="column">
+						{#if code}<button type="submit" class="button is-medium is-primary">Open</button>{/if}
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
-</form>
+</div>
 
 <section class="section">
 	<h2 class="title is-2 has-text-centered">Why?</h2>
@@ -85,10 +87,3 @@
 		<script async src="https://www.tiktok.com/embed.js"></script>
 	{/if}
 </section>
-
-<style lang="scss">
-	form {
-		margin-left: 1em;
-		margin-right: 1em;
-	}
-</style>

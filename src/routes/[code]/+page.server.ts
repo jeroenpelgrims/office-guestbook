@@ -1,20 +1,21 @@
+import { fromUrl } from '$lib/code';
 import { PrismaClient } from '@prisma/client';
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { passwordStrength } from 'check-password-strength';
 import { sha512 } from 'hash.js';
 import type { Actions, PageServerLoad } from './$types';
 
-function fixCode(code: string) {
-	return code.replaceAll('-', ' ');
-}
-
 export const load = (async ({ params }) => {
+	const code = fromUrl(params.code);
 	const prisma = new PrismaClient();
-	const code = fixCode(params.code);
 	const guestbook = await prisma.guestbook.findFirst({ where: { code } });
 	await prisma.$disconnect();
 
-	return { taken: guestbook !== null, code };
+	if (guestbook === null) {
+		throw error(404);
+	}
+
+	return { taken: guestbook !== null && guestbook.password !== null, code };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -27,9 +28,16 @@ export const actions = {
 		}
 
 		const hashedPassword = sha512().update(password).digest('hex');
-		const code = fixCode(params.code);
+		const code = fromUrl(params.code);
 		const prisma = new PrismaClient();
-		await prisma.guestbook.create({ data: { code, password: hashedPassword } });
+		await prisma.guestbook.update({
+			where: {
+				password: null,
+				code
+			},
+			data: { password: hashedPassword }
+		});
 		await prisma.$disconnect();
-	}
+	},
+	addEntry: async ({ request, params }) => {}
 } satisfies Actions;
