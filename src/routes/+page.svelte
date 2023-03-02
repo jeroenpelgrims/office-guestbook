@@ -31,8 +31,8 @@
 		</div>
 
 		<div class="column is-full">
-			<div class="columns is-mobile">
-				<form method="GET" action={`/${toUrl(code)}`}>
+			<form method="GET" action={`/${toUrl(code)}`}>
+				<div class="columns is-mobile">
 					<div class="column is-two-thirds">
 						<input
 							class="input is-medium"
@@ -44,8 +44,8 @@
 					<div class="column">
 						{#if code}<button type="submit" class="button is-medium is-primary">Open</button>{/if}
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
