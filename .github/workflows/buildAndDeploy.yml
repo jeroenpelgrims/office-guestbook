@@ -1,7 +1,8 @@
 name: buildAndDeployWorker
 on:
 	push:
-		branches: [ main ]
+		branches:
+			- production
 jobs:
   deploy:
     runs-on: ubuntu-latest
