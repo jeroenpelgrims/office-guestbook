@@ -2,9 +2,9 @@ import { fromUrl } from '$lib/code';
 import { PrismaClient } from '@prisma/client';
 import { error, fail } from '@sveltejs/kit';
 import BadWords from 'bad-words';
+import bcrypt from 'bcryptjs';
 import { passwordStrength } from 'check-password-strength';
 import dayjs from 'dayjs';
-import { sha512 } from 'hash.js';
 import type { Actions, PageServerLoad } from './$types';
 
 const badWords = new BadWords();
@@ -46,7 +46,8 @@ export const actions = {
 			return fail(400, { passwordInvalid: true });
 		}
 
-		const hashedPassword = sha512().update(password).digest('hex');
+		const salt = await bcrypt.genSalt();
+		const hashedPassword = await bcrypt.hash(password, salt);
 		const code = fromUrl(params.code);
 		const prisma = new PrismaClient();
 		await prisma.guestbook.update({
