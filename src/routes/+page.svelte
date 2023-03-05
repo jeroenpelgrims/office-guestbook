@@ -4,6 +4,7 @@
 	import { toUrl } from '$lib/code';
 
 	let code = '';
+	let newClicked = false;
 </script>
 
 <svelte:head>
@@ -21,8 +22,14 @@
 		<div class="column">
 			<div class="columns">
 				<div class="column">
-					<form method="POST" action="/new" use:enhance>
-						<button type="submit" class="button is-medium" class:is-primary={!code}>
+					<form method="POST" action="/new" use:enhance on:submit={() => (newClicked = true)}>
+						<button
+							type="submit"
+							class="button is-medium"
+							class:is-primary={!code}
+							class:is-loading={newClicked}
+							disabled={newClicked}
+						>
 							New guestbook
 						</button>
 					</form>

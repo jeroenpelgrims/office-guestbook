@@ -21,8 +21,8 @@ model Guestbook {
 model Entry {
   id          String    @id @default(uuid()) @db.Uuid
   name        String
-  message     String
-  timestamp   DateTime
+  message     String?
+  timestamp   DateTime  @default(now())
   guestbookId String    @db.Uuid
   guestbook   Guestbook @relation(fields: [guestbookId], references: [id])
 }

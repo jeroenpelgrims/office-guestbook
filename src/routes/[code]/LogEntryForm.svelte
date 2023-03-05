@@ -1,8 +1,17 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
+	import { writable } from 'svelte/store';
 	import type { ActionData } from './$types';
 
 	export let form: ActionData;
+
+	let name = writable<string>(browser ? window.localStorage.getItem('name') ?? '' : '');
+	name.subscribe((value) => {
+		if (browser) {
+			localStorage.setItem('name', value);
+		}
+	});
 </script>
 
 <div class="section">
@@ -11,12 +20,12 @@
 			<div class="card">
 				<div class="hero is-info is-small">
 					<div class="hero-body">
-						<div class="title">Register</div>
-						<div class="subtitle">Make a log entry in the guestbook</div>
+						<div class="title">Add entry</div>
+						<div class="subtitle">Write a log entry in the guestbook</div>
 					</div>
 				</div>
 				<div class="card-content">
-					<form method="POST" action="?/log" use:enhance={({ form }) => {}}>
+					<form method="POST" action="?/addLogEntry" use:enhance={({ form }) => {}}>
 						<div class="field">
 							<label class="label" for="name">Name</label>
 							<div class="control">
@@ -26,6 +35,7 @@
 									type="text"
 									placeholder="Type your name here"
 									required
+									bind:value={$name}
 								/>
 							</div>
 						</div>
@@ -41,7 +51,7 @@
 							</div>
 						</div>
 
-						<button class="button is-primary">Log entry</button>
+						<button class="button is-primary" type="submit">Save entry</button>
 					</form>
 				</div>
 			</div>

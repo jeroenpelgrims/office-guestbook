@@ -5,6 +5,7 @@
 
 	export let form: ActionData;
 
+	let isClaiming = false;
 	let password: string = '';
 	$: passwordSet = password !== '';
 	$: passwordValid = passwordStrength(password);
@@ -26,8 +27,9 @@
 						method="POST"
 						action="?/claim"
 						use:enhance={({ form }) => {
-							const button = form.querySelectorAll('button')[0];
-							button.disabled = true;
+							// const button = form.querySelectorAll('button')[0];
+							// button.disabled = true;
+							isClaiming = true;
 						}}
 					>
 						<div class="field">
@@ -67,8 +69,10 @@
 							</div>
 						</div>
 
-						<button class="button is-primary" disabled={passwordValid.id < 1}
-							>Claim guestbook</button
+						<button
+							class="button is-primary"
+							disabled={passwordValid.id < 1 || isClaiming}
+							class:is-loading={isClaiming}>Claim guestbook</button
 						>
 					</form>
 				</div>

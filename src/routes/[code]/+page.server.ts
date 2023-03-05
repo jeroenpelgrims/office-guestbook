@@ -1,9 +1,12 @@
 import { fromUrl } from '$lib/code';
 import { PrismaClient } from '@prisma/client';
 import { error, fail } from '@sveltejs/kit';
+import BadWords from 'bad-words';
 import { passwordStrength } from 'check-password-strength';
 import { sha512 } from 'hash.js';
 import type { Actions, PageServerLoad } from './$types';
+
+const badWords = new BadWords();
 
 export const load = (async ({ params }) => {
 	const code = fromUrl(params.code);
@@ -39,5 +42,24 @@ export const actions = {
 		});
 		await prisma.$disconnect();
 	},
-	addEntry: async ({ request, params }) => {}
+	addLogEntry: async ({ request, params }) => {
+		const code = fromUrl(params.code);
+		const data = await request.formData();
+		const name = data.get('name') as string;
+		const message = data.get('message') as string;
+
+		if (!name || name.trim() === '') {
+			return fail(400, { nameEmpty: true });
+		}
+
+		const prisma = new PrismaClient();
+		await prisma.entry.create({
+			data: {
+				name,
+				message: message.trim() === '' ? undefined : badWords.clean(message),
+				guestbook: { connect: { code } }
+			}
+		});
+		await prisma.$disconnect();
+	}
 } satisfies Actions;
