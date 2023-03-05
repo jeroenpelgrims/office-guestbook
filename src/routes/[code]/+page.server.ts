@@ -63,6 +63,7 @@ export const actions = {
 		const data = await request.formData();
 		const name = data.get('name') as string;
 		const message = data.get('message') as string;
+		const cleanedName = badWords.clean(name);
 		const cleanedMessage = message.trim() === '' ? undefined : badWords.clean(message.trim());
 
 		if (!name || name.trim() === '') {
@@ -72,7 +73,7 @@ export const actions = {
 		const prisma = new PrismaClient();
 		await prisma.entry.create({
 			data: {
-				name,
+				name: cleanedName,
 				message: cleanedMessage,
 				guestbook: { connect: { code } }
 			}
