@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import UrlQrCode from '$lib/UrlQrCode.svelte';
 	import dayjs from 'dayjs';
@@ -18,14 +19,15 @@
 	export let data: PageData;
 	export let form: ActionData;
 
-	const entriesByDay = groupBy(
-		(entry) => dayjs(entry.timestamp).format('YYYY-MM-DD'),
-		data.entries
-	);
+	$: entriesByDay = groupBy((entry) => dayjs(entry.timestamp).format('YYYY-MM-DD'), data.entries);
 </script>
 
 <section class="hero is-link">
 	<div class="hero-body">
+		<div class="title is-1 has-text-centered">
+			<a href="/">Office guestbook</a>
+		</div>
+
 		<div class="columns is-vcentered">
 			<div class="column is-three-quarters">
 				<p class="title">
@@ -45,29 +47,36 @@
 </section>
 
 {#if !data.taken}
-	<ClaimForm {form} />
+	<ClaimForm />
 {:else}
-	<LogEntryForm {form} />
+	<LogEntryForm
+		afterLog={() => {
+			console.log('Invalidate');
+			return invalidateAll();
+		}}
+	/>
 {/if}
 
 <div class="section">
 	<div class="title">Guestbook entries ({dayjs().format('MMMM')})</div>
 
-	{#each Object.entries(entriesByDay) as [key, entries]}
-	<div class="block">
-		<div class="subtitle" title={dayjs(key).toISOString()}>
-			{#if dayjs(key).isToday()}
-				Today
-			{:else if dayjs(key).isYesterday()}
-				Yesterday
-			{:else}
-				{dayjs(key).format('MMMM Do')}
-			{/if}
-		</div>
-		
-			{#each entries as entry}
-				<LogEntry {entry} />
-			{/each}
-		</div>
-	{/each}
+	{#key entriesByDay}
+		{#each Object.entries(entriesByDay) as [key, entries]}
+			<div class="block">
+				<div class="subtitle" title={dayjs(key).toISOString()}>
+					{#if dayjs(key).isToday()}
+						Today
+					{:else if dayjs(key).isYesterday()}
+						Yesterday
+					{:else}
+						{dayjs(key).format('MMMM Do')}
+					{/if}
+				</div>
+
+				{#each entries as entry}
+					<LogEntry {entry} />
+				{/each}
+			</div>
+		{/each}
+	{/key}
 </div>

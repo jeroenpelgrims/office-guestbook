@@ -10,7 +10,6 @@
 	export let entry: Pick<Entry, 'name' | 'message' | 'timestamp'>;
 	const timestamp = dayjs(entry.timestamp);
 	const isoTime = timestamp.toISOString();
-	const fromNow = timestamp.fromNow();
 </script>
 
 <div class="card">
@@ -18,7 +17,9 @@
 		<div class="media">
 			<div class="media-content">
 				<p class="title is-6">
-					<time datetime={isoTime} title={isoTime}>{dayjs(entry.timestamp).format('LT')}</time>
+					<time datetime={isoTime} title={isoTime}>
+						{timestamp.format('LT')}
+					</time>
 					{entry.name}
 				</p>
 			</div>

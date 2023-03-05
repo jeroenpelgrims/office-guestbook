@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { passwordStrength } from 'check-password-strength';
-	import type { ActionData } from './$types';
-
-	export let form: ActionData;
 
 	let isClaiming = false;
 	let password: string = '';
@@ -26,9 +23,7 @@
 					<form
 						method="POST"
 						action="?/claim"
-						use:enhance={({ form }) => {
-							// const button = form.querySelectorAll('button')[0];
-							// button.disabled = true;
+						use:enhance={() => {
 							isClaiming = true;
 						}}
 					>

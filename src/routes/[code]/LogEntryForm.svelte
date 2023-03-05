@@ -2,10 +2,10 @@
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import { writable } from 'svelte/store';
-	import type { ActionData } from './$types';
 
-	export let form: ActionData;
+	export let afterLog: () => Promise<void>;
 
+	let isLogging = false;
 	let name = writable<string>(browser ? window.localStorage.getItem('name') ?? '' : '');
 	name.subscribe((value) => {
 		if (browser) {
@@ -25,7 +25,17 @@
 					</div>
 				</div>
 				<div class="card-content">
-					<form method="POST" action="?/addLogEntry" use:enhance={({ form }) => {}}>
+					<form
+						method="POST"
+						action="?/addLogEntry"
+						use:enhance={({}) => {
+							isLogging = true;
+							return async () => {
+								await afterLog();
+								isLogging = false;
+							};
+						}}
+					>
 						<div class="field">
 							<label class="label" for="name">Name</label>
 							<div class="control">
@@ -51,7 +61,14 @@
 							</div>
 						</div>
 
-						<button class="button is-primary" type="submit">Save entry</button>
+						<button
+							class="button is-primary"
+							type="submit"
+							disabled={isLogging}
+							class:is-loading={isLogging}
+						>
+							Save entry
+						</button>
 					</form>
 				</div>
 			</div>
