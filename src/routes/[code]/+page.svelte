@@ -3,6 +3,7 @@
 	import UrlQrCode from '$lib/UrlQrCode.svelte';
 	import type { ActionData, PageData } from './$types';
 	import ClaimForm from './ClaimForm.svelte';
+	import LogEntry from './LogEntry.svelte';
 	import LogEntryForm from './LogEntryForm.svelte';
 
 	export let data: PageData;
@@ -34,3 +35,9 @@
 {:else}
 	<LogEntryForm {form} />
 {/if}
+
+<div class="section">
+	{#each data.entries as entry}
+		<LogEntry {entry} />
+	{/each}
+</div>

@@ -11,14 +11,21 @@ const badWords = new BadWords();
 export const load = (async ({ params }) => {
 	const code = fromUrl(params.code);
 	const prisma = new PrismaClient();
-	const guestbook = await prisma.guestbook.findFirst({ where: { code } });
+	const guestbook = await prisma.guestbook.findFirst({
+		where: { code },
+		include: { entries: { orderBy: { timestamp: 'desc' } } }
+	});
 	await prisma.$disconnect();
 
 	if (guestbook === null) {
 		throw error(404);
 	}
 
-	return { taken: guestbook !== null && guestbook.password !== null, code };
+	return {
+		taken: guestbook.password !== null,
+		code,
+		entries: guestbook.entries
+	};
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -47,6 +54,7 @@ export const actions = {
 		const data = await request.formData();
 		const name = data.get('name') as string;
 		const message = data.get('message') as string;
+		const cleanedMessage = message.trim() === '' ? undefined : badWords.clean(message.trim());
 
 		if (!name || name.trim() === '') {
 			return fail(400, { nameEmpty: true });
@@ -56,7 +64,7 @@ export const actions = {
 		await prisma.entry.create({
 			data: {
 				name,
-				message: message.trim() === '' ? undefined : badWords.clean(message),
+				message: cleanedMessage,
 				guestbook: { connect: { code } }
 			}
 		});
