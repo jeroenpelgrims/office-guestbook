@@ -39,12 +39,14 @@
 		"@types/bad-words": "^3.0.1",
 		"@types/pg": "^8.6.6",
 		"@types/qrcode": "^1.5.0",
+		"@types/ramda": "^0.28.23",
 		"bad-words": "^3.0.4",
 		"check-password-strength": "^2.0.7",
 		"dayjs": "^1.11.7",
 		"env-cmd": "^10.1.0",
 		"hash.js": "^1.1.7",
 		"pg": "^8.9.0",
-		"qrcode": "^1.5.1"
+		"qrcode": "^1.5.1",
+		"ramda": "^0.28.0"
 	}
 }

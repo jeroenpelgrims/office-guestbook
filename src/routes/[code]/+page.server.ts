@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { error, fail } from '@sveltejs/kit';
 import BadWords from 'bad-words';
 import { passwordStrength } from 'check-password-strength';
+import dayjs from 'dayjs';
 import { sha512 } from 'hash.js';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -10,10 +11,18 @@ const badWords = new BadWords();
 
 export const load = (async ({ params }) => {
 	const code = fromUrl(params.code);
+	const startOfMonth = dayjs().startOf('month').toDate();
+	const endOfMonth = dayjs().endOf('month').toDate();
 	const prisma = new PrismaClient();
 	const guestbook = await prisma.guestbook.findFirst({
 		where: { code },
-		include: { entries: { orderBy: { timestamp: 'desc' } } }
+		include: {
+			entries: {
+				orderBy: { timestamp: 'desc' },
+				where: { timestamp: { gte: startOfMonth, lte: endOfMonth } },
+				select: { name: true, message: true, timestamp: true }
+			}
+		}
 	});
 	await prisma.$disconnect();
 

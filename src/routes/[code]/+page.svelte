@@ -1,13 +1,27 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import UrlQrCode from '$lib/UrlQrCode.svelte';
+	import dayjs from 'dayjs';
+	import advancedFormat from 'dayjs/plugin/advancedFormat';
+	import isToday from 'dayjs/plugin/isToday';
+	import isYesterday from 'dayjs/plugin/isYesterday';
+	import groupBy from 'ramda/es/groupBy';
 	import type { ActionData, PageData } from './$types';
 	import ClaimForm from './ClaimForm.svelte';
 	import LogEntry from './LogEntry.svelte';
 	import LogEntryForm from './LogEntryForm.svelte';
 
+	dayjs.extend(isToday);
+	dayjs.extend(isYesterday);
+	dayjs.extend(advancedFormat);
+
 	export let data: PageData;
 	export let form: ActionData;
+
+	const entriesByDay = groupBy(
+		(entry) => dayjs(entry.timestamp).format('YYYY-MM-DD'),
+		data.entries
+	);
 </script>
 
 <section class="hero is-link">
@@ -19,7 +33,7 @@
 				</p>
 				<p class="subtitle">
 					This is the unique code of this guestbook.<br />
-					Desk visitors can also scan the QR code.
+					Desk visitors can also scan the QR code to open the guestbook.
 				</p>
 			</div>
 
@@ -37,7 +51,23 @@
 {/if}
 
 <div class="section">
-	{#each data.entries as entry}
-		<LogEntry {entry} />
+	<div class="title">Guestbook entries ({dayjs().format('MMMM')})</div>
+
+	{#each Object.entries(entriesByDay) as [key, entries]}
+	<div class="block">
+		<div class="subtitle" title={dayjs(key).toISOString()}>
+			{#if dayjs(key).isToday()}
+				Today
+			{:else if dayjs(key).isYesterday()}
+				Yesterday
+			{:else}
+				{dayjs(key).format('MMMM Do')}
+			{/if}
+		</div>
+		
+			{#each entries as entry}
+				<LogEntry {entry} />
+			{/each}
+		</div>
 	{/each}
 </div>
