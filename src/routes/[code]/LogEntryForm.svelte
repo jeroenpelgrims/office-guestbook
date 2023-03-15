@@ -75,12 +75,3 @@
 		</div>
 	</div>
 </div>
-
-<style lang="scss">
-	form ul {
-		list-style: disc;
-		li {
-			margin-left: 1.5em;
-		}
-	}
-</style>

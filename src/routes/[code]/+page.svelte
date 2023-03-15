@@ -7,7 +7,7 @@
 	import isToday from 'dayjs/plugin/isToday';
 	import isYesterday from 'dayjs/plugin/isYesterday';
 	import groupBy from 'ramda/es/groupBy';
-	import type { ActionData, PageData } from './$types';
+	import type { PageData } from './$types';
 	import ClaimForm from './ClaimForm.svelte';
 	import LogEntry from './LogEntry.svelte';
 	import LogEntryForm from './LogEntryForm.svelte';
@@ -17,7 +17,7 @@
 	dayjs.extend(advancedFormat);
 
 	export let data: PageData;
-	export let form: ActionData;
+	// export let form: ActionData;
 
 	$: entriesByDay = groupBy((entry) => dayjs(entry.timestamp).format('YYYY-MM-DD'), data.entries);
 </script>
